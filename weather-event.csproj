@@ -5,6 +5,7 @@
     <RootNamespace>weather_event</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove=".gitattributes" />
     <None Remove=".gitignore" />
   </ItemGroup>
   <ItemGroup>
