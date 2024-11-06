@@ -6,7 +6,7 @@ namespace weather_event
 {
     public class WeatherTimer
     {
-        [FunctionName("WeatherFunction")]
+        [FunctionName("WeatherTimer")]
         public void Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
