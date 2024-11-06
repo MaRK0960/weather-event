@@ -4,8 +4,13 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace weather_event
 {
@@ -18,17 +23,49 @@ namespace weather_event
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            string email = req.Query["email"];
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            email = email ?? data?.name;
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            try
+            {
+                await SendEmail(email,
+                    "Welcome to Weather Notification 7'tfa App!",
+                    "You just registered to our awesome 7'tfa Weather Notification App!\nEnjoy weather notifications every hour!");
+            }
+            catch (Exception x)
+            {
+                log.LogCritical(x, "Error in SendEmail");
+                return new ExceptionResult(x, true);
+            }
 
-            return new OkObjectResult(responseMessage);
+            return new OkResult();
+        }
+
+        private static async Task SendEmail(string toAddress, string subject, string body)
+        {
+            MailMessage mail = new()
+            {
+                BodyEncoding = Encoding.UTF8,
+                SubjectEncoding = Encoding.UTF8,
+                From = new MailAddress("***REMOVED***"),
+                Subject = subject,
+                Body = body
+            };
+
+            mail.To.Add(toAddress);
+            mail.Headers.Add("Content-Type", "text/html; charset=utf-8");
+
+            SmtpClient smtpClient = new("smtp.azurecomm.net", 587)
+            {
+                Credentials = new NetworkCredential("***REMOVED***", "***REMOVED***"),
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network
+            };
+
+            await smtpClient.SendMailAsync(mail);
         }
     }
 }
