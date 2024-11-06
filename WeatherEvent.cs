@@ -32,8 +32,8 @@ namespace weather_event
             try
             {
                 await SendEmail(email,
-                    "Welcome to Weather Notification 7'tfa App!",
-                    "You just registered to our awesome 7'tfa Weather Notification App!\nEnjoy weather notifications every hour!");
+                    "Welcome to 7'tfa Weather Notification App!",
+                    "You just registered to our magnificent 7'tfa Weather Notification App!\nEnjoy weather notifications every hour!");
             }
             catch (Exception x)
             {
