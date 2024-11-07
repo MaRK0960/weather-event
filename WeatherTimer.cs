@@ -11,7 +11,7 @@ namespace weather_event
     public class WeatherTimer
     {
         [FunctionName("WeatherTimer")]
-        public void Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer, ILogger log)
+        public void Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log)
         {
             ArmClient client = new(new DefaultAzureCredential());
 
