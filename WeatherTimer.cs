@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Core;
 using Azure.Identity;
 using Azure.ResourceManager;
@@ -10,14 +11,14 @@ namespace weather_event
     public class WeatherTimer
     {
         [FunctionName("WeatherTimer")]
-        public void Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log)
+        public void Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer, ILogger log)
         {
             ArmClient client = new(new DefaultAzureCredential());
 
             ContainerGroupResource containerGroup = client.GetContainerGroupResource(
                 ResourceIdentifier.Parse("***REMOVED***"));
 
-            containerGroup.Start(Azure.WaitUntil.Started);
+            containerGroup.Start(WaitUntil.Started);
         }
     }
 }
