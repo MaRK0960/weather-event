@@ -10,7 +10,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using weather_event.Models;
 
@@ -71,8 +70,6 @@ namespace weather_event
             {
                 MailMessage mail = new()
                 {
-                    BodyEncoding = Encoding.UTF8,
-                    SubjectEncoding = Encoding.UTF8,
                     From = new MailAddress("***REMOVED***"),
                     Subject = subject,
                     Body = body
@@ -82,8 +79,6 @@ namespace weather_event
                 {
                     mail.Bcc.Add(email);
                 }
-
-                mail.Headers.Add("Content-Type", "text/html; charset=utf-8");
 
                 SmtpClient smtpClient = new("smtp.azurecomm.net", 587)
                 {
