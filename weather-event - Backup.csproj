@@ -10,9 +10,10 @@
 		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
+		<PackageReference Include="azure.data.tables" Version="12.9.1" />
+		<PackageReference Include="Azure.Identity" Version="1.13.1" />
+		<PackageReference Include="Azure.ResourceManager.ContainerInstance" Version="1.2.1" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.5.0" />
-		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
