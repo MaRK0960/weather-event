@@ -19,7 +19,7 @@ namespace weather_event
     public class WeatherTimer
     {
         [FunctionName("WeatherTimer")]
-        public async Task Run([TimerTrigger("0 0 9,21 * * *")] TimerInfo myTimer, ILogger log)
+        public async Task Run([TimerTrigger("0 0 7,19 * * *")] TimerInfo myTimer, ILogger log)
         {
             try
             {
