@@ -49,8 +49,6 @@ namespace weather_event
                     $"Today {day.maxtemp_c:0.0}\u00B0C/{day.mintemp_c:0.0}\u00B0C\n" +
                     "May your 7'tfa stay eternally healthy!",
                     log);
-
-                Environment.Exit(0);
             }
             catch (Exception x)
             {
