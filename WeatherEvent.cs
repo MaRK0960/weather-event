@@ -29,7 +29,7 @@ namespace weather_event
             {
                 await EmailSender.Send(email,
                     "Welcome to 7'tfa Weather Notification App!",
-                    "You just registered to our magnificent 7'tfa Weather Notification App!\nEnjoy weather notifications every hour!");
+                    "You just registered to our magnificent 7'tfa Weather Notification App!\nEnjoy weather notifications at 9 PM and 9 AM!");
             }
             catch (Exception x)
             {
