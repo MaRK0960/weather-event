@@ -7,16 +7,16 @@ namespace weather_event.Service
 {
     internal static class EmailSender
     {
-        public static Task Send(string toAddress, string subject, string body)
+        public static async Task Send(string toAddress, string subject, string body)
         {
             using MailMessage mailMessage = CreateMessage(subject, body);
 
             mailMessage.To.Add(toAddress);
 
-            return Send(mailMessage);
+            await Send(mailMessage);
         }
 
-        public static Task Send(List<string> toAddresses, string subject, string body)
+        public static async Task Send(List<string> toAddresses, string subject, string body)
         {
             using MailMessage mailMessage = CreateMessage(subject, body);
 
@@ -25,7 +25,7 @@ namespace weather_event.Service
                 mailMessage.Bcc.Add(email);
             }
 
-            return Send(mailMessage);
+            await Send(mailMessage);
         }
 
         private static MailMessage CreateMessage(string subject, string body)
