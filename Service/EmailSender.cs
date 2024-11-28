@@ -38,7 +38,7 @@ namespace weather_event.Service
             };
         }
 
-        private static Task Send(MailMessage mailMessage)
+        private static async Task Send(MailMessage mailMessage)
         {
             using SmtpClient smtpClient = new("smtp.azurecomm.net", 587)
             {
@@ -47,7 +47,7 @@ namespace weather_event.Service
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
 
-            return smtpClient.SendMailAsync(mailMessage);
+            await smtpClient.SendMailAsync(mailMessage);
         }
     }
 }
