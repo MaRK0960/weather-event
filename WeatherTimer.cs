@@ -5,7 +5,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -32,7 +31,7 @@ namespace weather_event
 
                 Day day = weather.forecast.forecastday[0].day;
 
-                TableServiceClient tableServiceClient = new(ConfigurationManager.ConnectionStrings["Weather-Table-Connection-String"].ConnectionString);
+                TableServiceClient tableServiceClient = new(AppConfiguration.Get("CUSTOMCONNSTR_Weather:Table:ConnectionString"));
                 Response<TableItem> table = await tableServiceClient.CreateTableIfNotExistsAsync("Emails");
 
                 TableClient tableClient = tableServiceClient.GetTableClient(table.Value.Name);
