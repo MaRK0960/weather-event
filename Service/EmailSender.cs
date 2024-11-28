@@ -32,7 +32,7 @@ namespace weather_event.Service
         {
             return new MailMessage()
             {
-                From = new MailAddress("***REMOVED***"),
+                From = new MailAddress(AppConfiguration.Get("Weather:Communication:EmailAddress")),
                 Subject = subject,
                 Body = body
             };
@@ -42,7 +42,7 @@ namespace weather_event.Service
         {
             using SmtpClient smtpClient = new("smtp.azurecomm.net", 587)
             {
-                Credentials = new NetworkCredential("***REMOVED***", "***REMOVED***"),
+                Credentials = new NetworkCredential(AppConfiguration.Get("Weather:Communication:Username"), AppConfiguration.Get("Weather:Communication:Password")),
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
