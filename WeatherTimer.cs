@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using weather_event.Models;
+using weather_event.Service;
 
 namespace weather_event
 {
@@ -42,12 +41,11 @@ namespace weather_event
                     .ToListAsync()
                     .ConfigureAwait(false);
 
-                await SendEmail(emails,
+                await EmailSender.Send(emails,
                     "7'tfa Weather Notification",
                     $"Now {weather.current.temp_c:0.0}\u00B0C\n" +
                     $"Today {day.maxtemp_c:0.0}\u00B0C/{day.mintemp_c:0.0}\u00B0C\n" +
-                    "May your 7'tfa stay eternally healthy!",
-                    log);
+                    "May your 7'tfa stay eternally healthy!");
             }
             catch (Exception x)
             {
@@ -62,37 +60,6 @@ namespace weather_event
             HttpResponseMessage httpResponse = await httpClient.GetAsync("***REMOVED***");
 
             return await httpResponse.Content.ReadFromJsonAsync<Weather>();
-        }
-
-        private async Task SendEmail(List<string> toAddresses, string subject, string body, ILogger log)
-        {
-            try
-            {
-                MailMessage mail = new()
-                {
-                    From = new MailAddress("***REMOVED***"),
-                    Subject = subject,
-                    Body = body
-                };
-
-                foreach (string email in toAddresses)
-                {
-                    mail.Bcc.Add(email);
-                }
-
-                SmtpClient smtpClient = new("smtp.azurecomm.net", 587)
-                {
-                    Credentials = new NetworkCredential("***REMOVED***", "***REMOVED***"),
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network
-                };
-
-                await smtpClient.SendMailAsync(mail);
-            }
-            catch (Exception x)
-            {
-                log.LogCritical(x, "Error in SendEmail");
-            }
         }
     }
 }
