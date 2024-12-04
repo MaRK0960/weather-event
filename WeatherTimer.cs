@@ -21,7 +21,6 @@ namespace weather_event
         {
             try
             {
-                myTimer.
                 Weather weather = await GetWeather();
 
                 if (weather == null)
