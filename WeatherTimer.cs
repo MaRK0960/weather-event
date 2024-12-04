@@ -19,6 +19,9 @@ namespace weather_event
         [FunctionName("WeatherTimer")]
         public async Task Run([TimerTrigger("0 0 7,19 * * *")] TimerInfo myTimer, ILogger log)
         {
+            if (myTimer.IsPastDue)
+                return;
+
             try
             {
                 Weather weather = await GetWeather();
