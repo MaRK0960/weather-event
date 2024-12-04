@@ -34,7 +34,8 @@ namespace weather_event.Service
             {
                 From = new MailAddress(AppConfiguration.Get("Weather:Communication:EmailAddress")),
                 Subject = subject,
-                Body = body
+                Body = body,
+                IsBodyHtml = true
             };
         }
 
