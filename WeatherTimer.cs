@@ -41,12 +41,14 @@ namespace weather_event
                     .ToListAsync()
                     .ConfigureAwait(false);
 
-                await EmailSender.Send(emails,
-                    "7'tfa Weather Notification",
-                    $"Now {weather.current.temp_c:0.0}\u00B0C\n" +
-                    $"Today {day.maxtemp_c:0.0}\u00B0C/{day.mintemp_c:0.0}\u00B0C\n" +
-                    $"Invite new friends to our <a href=\"{AppConfiguration.Get("Weather:Site")}\">7'tfa Weather Notification App!</a>\n" +
-                    "May your 7'tfa stay eternally healthy!");
+                string emailBody = EmailTemplate.Get("weather-notification-email-template.html");
+
+                emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
+                emailBody = emailBody.Replace("{CurrentTemp}", $"{weather.current.temp_c:0.0}");
+                emailBody = emailBody.Replace("{MinTemp}", $"{day.mintemp_c:0.0}");
+                emailBody = emailBody.Replace("{MaxTemp}", $"{day.maxtemp_c:0.0}");
+
+                await EmailSender.Send(emails, "7'tfa Weather Notification", emailBody);
             }
             catch (Exception x)
             {

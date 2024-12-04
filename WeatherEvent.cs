@@ -23,14 +23,15 @@ namespace weather_event
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            email = email ?? data?.name;
+            email ??= data?.name;
+
+            string emailBody = EmailTemplate.Get("weather-welcome-email-template.html");
+
+            emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
 
             try
             {
-                await EmailSender.Send(email,
-                    "Welcome to 7'tfa Weather Notification App!",
-@$"You just registered to our magnificent <a href=""{AppConfiguration.Get("Weather:Site")}"">7'tfa Weather Notification App!</a>
-Enjoy weather notifications at 9 PM and 9 AM!");
+                await EmailSender.Send(email, "Welcome to 7'tfa Weather Notification App!", emailBody);
             }
             catch (Exception x)
             {
