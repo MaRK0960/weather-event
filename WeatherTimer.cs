@@ -21,6 +21,7 @@ namespace weather_event
         {
             try
             {
+                myTimer.
                 Weather weather = await GetWeather();
 
                 if (weather == null)
@@ -45,6 +46,7 @@ namespace weather_event
                     "7'tfa Weather Notification",
                     $"Now {weather.current.temp_c:0.0}\u00B0C\n" +
                     $"Today {day.maxtemp_c:0.0}\u00B0C/{day.mintemp_c:0.0}\u00B0C\n" +
+                    $"Invite new friends to our <a href=\"{AppConfiguration.Get("Weather:Site")}\">7'tfa Weather Notification App!</a>" +
                     "May your 7'tfa stay eternally healthy!");
             }
             catch (Exception x)
