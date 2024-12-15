@@ -1,10 +1,10 @@
-using Azure;
-using Azure.Data.Tables;
-using Azure.Data.Tables.Models;
+using Azure.Data.AppConfiguration;
+using Azure.Identity;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -17,7 +17,7 @@ namespace weather_event
     public class WeatherTimer
     {
         [FunctionName("WeatherTimer")]
-        public async Task Run([TimerTrigger("0 0 7,19 * * *")] TimerInfo myTimer, ILogger log)
+        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log)
         {
             if (myTimer.IsPastDue)
                 return;
@@ -32,26 +32,27 @@ namespace weather_event
                     return;
                 }
 
-                Day day = weather.forecast.forecastday[0].day;
+                ConfigurationClient configurationClient = new(new Uri(AppConfiguration.Get("Weather:Configuration:URI")), new DefaultAzureCredential());
 
-                TableServiceClient tableServiceClient = new(AppConfiguration.Get("CUSTOMCONNSTR_Weather:Table:ConnectionString"));
-                Response<TableItem> table = await tableServiceClient.CreateTableIfNotExistsAsync("Emails");
+                Container container = await GetContainer(configurationClient);
 
-                TableClient tableClient = tableServiceClient.GetTableClient(table.Value.Name);
+                int currentHour = DateTime.UtcNow.Hour;
 
-                List<string> emails = await tableClient.QueryAsync<Email>(maxPerPage: 1000)
-                    .Select(e => e.EmailAddress)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
+                FeedIterator<string> feed = container
+                    .GetItemLinqQueryable<WeatherUser>()
+                    .Where(s => s.NotificationTime.Any(t => t == currentHour))
+                    .Select(s => s.Email)
+                    .ToFeedIterator();
 
-                string emailBody = EmailTemplate.Get("weather-notification-email-template.html");
+                string emailBody = ConstructEmailBody(weather);
 
-                emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
-                emailBody = emailBody.Replace("{CurrentTemp}", $"{weather.current.temp_c:0.0}");
-                emailBody = emailBody.Replace("{MinTemp}", $"{day.mintemp_c:0.0}");
-                emailBody = emailBody.Replace("{MaxTemp}", $"{day.maxtemp_c:0.0}");
+                while (feed.HasMoreResults)
+                {
+                    FeedResponse<string> results = await feed.ReadNextAsync();
 
-                await EmailSender.Send(emails, "7'tfa Weather Notification", emailBody);
+                    if (results.Count > 0)
+                        await EmailSender.Send(results, "7'tfa Weather Notification", emailBody);
+                }
             }
             catch (Exception x)
             {
@@ -59,13 +60,43 @@ namespace weather_event
             }
         }
 
-        private async Task<Weather> GetWeather()
+        private static async Task<Weather> GetWeather()
         {
             using HttpClient httpClient = new();
 
             HttpResponseMessage httpResponse = await httpClient.GetAsync(AppConfiguration.Get("Weather:External:API"));
 
             return await httpResponse.Content.ReadFromJsonAsync<Weather>();
+        }
+
+        private static async Task<Container> GetContainer(ConfigurationClient configurationClient)
+        {
+            Azure.Response<ConfigurationSetting> cosmosUriSetting = await configurationClient.GetConfigurationSettingAsync("Weather-Cosmos-URI");
+            string cosmosUri = cosmosUriSetting.Value.Value;
+
+            CosmosClient cosmosClient = new(
+                accountEndpoint: cosmosUri,
+                tokenCredential: new DefaultAzureCredential()
+            );
+
+            Database database = cosmosClient.GetDatabase("Weather");
+            Container container = database.GetContainer("Users");
+
+            return container;
+        }
+
+        private static string ConstructEmailBody(Weather weather)
+        {
+            Day day = weather.forecast.forecastday[0].day;
+
+            string emailBody = EmailTemplate.Get("weather-notification-email-template.html");
+
+            emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
+            emailBody = emailBody.Replace("{CurrentTemp}", $"{weather.current.temp_c:0.0}");
+            emailBody = emailBody.Replace("{MinTemp}", $"{day.mintemp_c:0.0}");
+            emailBody = emailBody.Replace("{MaxTemp}", $"{day.maxtemp_c:0.0}");
+
+            return emailBody;
         }
     }
 }

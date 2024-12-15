@@ -16,7 +16,7 @@ namespace weather_event.Service
             await Send(mailMessage);
         }
 
-        public static async Task Send(List<string> toAddresses, string subject, string body)
+        public static async Task Send(IEnumerable<string> toAddresses, string subject, string body)
         {
             using MailMessage mailMessage = CreateMessage(subject, body);
 
