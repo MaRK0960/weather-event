@@ -25,9 +25,13 @@ namespace weather_event
 
             emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
 
+            string emailSubject = isNew
+                ? "Welcome to 7'tfa Weather Notification App!"
+                : "7'tfa Weather Notification App Subscription Updated!";
+
             try
             {
-                return EmailSender.Send(email, "Welcome to 7'tfa Weather Notification App!", emailBody);
+                return EmailSender.Send(email, emailSubject, emailBody);
             }
             catch (Exception x)
             {
