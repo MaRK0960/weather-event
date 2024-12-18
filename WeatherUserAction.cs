@@ -15,11 +15,13 @@ namespace weather_event
         [FunctionName("WeatherUserAction")]
         public static Task Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
         {
-            log.LogInformation("Event Data {0}\t\tEvent Subject {1}", eventGridEvent.Data.ToString(), eventGridEvent.Subject);
-
             string email = eventGridEvent.Data.ToObjectFromJson<string>();
+            bool isNew = eventGridEvent.EventType == "NewSubscription";
 
-            string emailBody = EmailTemplate.Get("weather-welcome-email-template.html");
+            string templateName = isNew
+                ? "weather-welcome-email-template.html"
+                : "weather-modified-email-template.html";
+            string emailBody = EmailTemplate.Get(templateName);
 
             emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
 
