@@ -15,6 +15,8 @@ namespace weather_event
         [FunctionName("WeatherUserAction")]
         public static Task Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
         {
+            log.LogInformation("Event Data {0}", eventGridEvent.Data.ToString());
+
             (bool isUpdate, string email) = eventGridEvent.Data.ToObjectFromJson<(bool, string)>();
 
             string emailBody = EmailTemplate.Get("weather-welcome-email-template.html");
