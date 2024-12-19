@@ -10,9 +10,9 @@ using weather_event.Service;
 
 namespace weather_event
 {
-    public static class WeatherUserAction
+    public static class WeatherNewSubscription
     {
-        [FunctionName("WeatherUserAction")]
+        [FunctionName("WeatherNewSubscription")]
         public static Task Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
         {
             string email = eventGridEvent.Data.ToObjectFromJson<string>();
