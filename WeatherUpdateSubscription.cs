@@ -20,6 +20,8 @@ namespace weather_event
                 .SelectMany(es => es.Select(e => e.Data.ToString()))
                 .ToList();
 
+            log.LogInformation(string.Join(',', emails));
+
             string emailBody = EmailTemplate.Get("weather-modified-email-template.html");
 
             emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
