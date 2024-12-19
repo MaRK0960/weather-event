@@ -17,7 +17,7 @@ namespace weather_event
         {
             List<string> emails = events
                 .Select(e => e.EventBody.ToObjectFromJson<EventGridEvent[]>())
-                .SelectMany(es => es.Select(e => e.Data.ToString()))
+                .SelectMany(es => es.Select(e => e.Data.ToObjectFromJson<string>()))
                 .ToList();
 
             log.LogInformation(string.Join(',', emails));
