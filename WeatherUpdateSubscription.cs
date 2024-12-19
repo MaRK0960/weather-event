@@ -1,10 +1,10 @@
-using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using weather_event.Service;
 
@@ -16,7 +16,8 @@ namespace weather_event
         public static Task Run([EventHubTrigger("%WeatherUpdateSubscriptionEventHubName%", Connection = "WeatherUpdateSubscriptionEventHub")] EventData[] events, ILogger log)
         {
             List<string> emails = events
-                .Select(e => e.EventBody.ToObjectFromJson<EventGridEvent>().Data.ToObjectFromJson<string>())
+                .Select(e => e.EventBody)
+                .Select(b => JsonDocument.Parse(b).RootElement.GetProperty("Data").ToString())
                 .ToList();
 
             string emailBody = EmailTemplate.Get("weather-modified-email-template.html");
