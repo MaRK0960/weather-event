@@ -16,18 +16,12 @@ namespace weather_event
         public static Task Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
         {
             string email = eventGridEvent.Data.ToObjectFromJson<string>();
-            bool isNew = eventGridEvent.EventType == "NewSubscription";
 
-            string templateName = isNew
-                ? "weather-welcome-email-template.html"
-                : "weather-modified-email-template.html";
-            string emailBody = EmailTemplate.Get(templateName);
+            string emailBody = EmailTemplate.Get("weather-welcome-email-template.html");
 
             emailBody = emailBody.Replace("{SiteURL}", AppConfiguration.Get("Weather:Site"));
 
-            string emailSubject = isNew
-                ? "Welcome to 7'tfa Weather Notification App!"
-                : "7'tfa Weather Notification App Subscription Updated!";
+            string emailSubject = "Welcome to 7'tfa Weather Notification App!";
 
             try
             {
